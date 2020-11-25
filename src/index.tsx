@@ -29,6 +29,16 @@ function getMinMax(data: number[][]): [number, number] {
   return [min, max]
 }
 
+// Rescale value between 0 and 1
+function calcRatio(value: any, min: number, max: number): any {
+  if (value === null) return null
+  // Center at 0 if negative/positive values
+  if (min < 0 && max > 0) {
+    return Math.abs(value) / Math.max(Math.abs(min), Math.abs(max))
+  }
+  return (value - min) / (max - min)
+}
+
 export const HeatMapGrid = ({
   data,
   xLabels,
@@ -45,7 +55,6 @@ export const HeatMapGrid = ({
 }: Props) => {
   const [xLabelHeight, xLabelRef] = useElemetHeight(22)
   const [min, max] = getMinMax(data)
-  const minMaxDiff = max - min
   const isXLabelReverse = xLabelsPos === 'bottom'
   const isYLabelReverse = yLabelsPos === 'right'
 
@@ -89,7 +98,7 @@ export const HeatMapGrid = ({
                   square={square}
                   render={cellRender}
                   style={cellStyle}
-                  ratio={(value - min) / minMaxDiff}
+                  ratio={calcRatio(value, min, max)}
                 />
               ))}
             </Row>
